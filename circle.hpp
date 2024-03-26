@@ -10,10 +10,11 @@ struct Circle {
     Circle() {
         x = rand() % 800;
         y = rand() % 800;
-        dy = rand() % 20 - 10;
-        dx = rand() % 20 - 10;
+        // dy = rand() % 20 - 10;
+        // dx = rand() % 20 - 10;
+        dx = dy = 0;
         // radius = 50;
-        radius = rand() % 50 + 50;
+        radius = rand() % 25 + 25;
         color = getRandomColor();
     }
 

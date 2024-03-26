@@ -11,6 +11,7 @@ struct World {
     // static constexpr float surfaceFrictionFactor = 1;
 
     static constexpr float gravity = 9.81;
+    static constexpr float generalAccelerationFactor = 0.1;
     static constexpr float wallCollisionEnergyLossFactor = 0.8;
     static constexpr float circleCollisionEnergyLossFactor = 0.6;
     static constexpr float surfaceFrictionFactor = 0.95;
@@ -20,7 +21,12 @@ struct World {
     void update() {
         for (Circle& circle : circles) {
             // std::cout << circle.y << " " << circle.dy << std::endl;
-            circle.dy += gravity;
+            float dx = 400 - circle.x;
+            float dy = 400 - circle.y;
+            float d = std::sqrt(dx*dx + dy*dy);
+            circle.dx = dx/d * std::abs(dx) * generalAccelerationFactor;
+            circle.dy = dy/d * std::abs(dy) * generalAccelerationFactor;
+            // circle.dy += gravity;
             circle.x += circle.dx;
             circle.y += circle.dy;
             resolveWallCollision(circle);
