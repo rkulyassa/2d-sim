@@ -7,7 +7,7 @@ int main() {
     World world;
 
     sf::RenderWindow window(sf::VideoMode(800, 800), "2d Physics Simulation");
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(60);
 
     while (window.isOpen()) {
         world.update();
