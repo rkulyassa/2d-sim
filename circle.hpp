@@ -5,6 +5,7 @@
 
 struct Circle {
     float x, y, dx, dy, radius;
+    bool isDragging;
     sf::Color color;
 
     Circle() {
@@ -18,7 +19,7 @@ struct Circle {
         color = getRandomColor();
     }
 
-    sf::CircleShape getCircleShape() {
+    sf::CircleShape getShape() {
         sf::CircleShape circleShape(radius);
         circleShape.setFillColor(color);
         circleShape.setPosition(x - radius, y - radius);
