@@ -1,5 +1,4 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 #include "./utils.hpp"
 
@@ -15,8 +14,8 @@ struct Circle {
         // dy = rand() % 20 - 10;
         // dx = rand() % 20 - 10;
         dx = dy = 0;
-        radius = 2;
-        // radius = rand() % 40 + 20;
+        // radius = 12;
+        radius = rand() % 40 + 20;
         color = getRandomColor();
         // color = sf::Color::Blue;
     }

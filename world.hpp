@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include "./circle.hpp"
 #include "./utils.hpp"
@@ -15,29 +14,48 @@ struct World {
 
     void update(sf::Vector2i mousePos) {
         for (Circle& circle : circles) {
-            if (circle.isDragging) {
-                circle.x = mousePos.x;
-                circle.y = mousePos.y;
-            };
-            float dx = windowX/2 - circle.x;
-            float dy = windowY/2 - circle.y;
-            circle.dx = dx * generalAccelerationFactor;
-            circle.dy = dy * generalAccelerationFactor;
-            // circle.dy += gravity;
-            circle.x += circle.dx;
-            circle.y += circle.dy;
+            resolveMotion(circle, mousePos);
             resolveWallCollision(circle);
         }
         for (int i = 0; i < collisionIterations; i++) {
             for (Circle& a : circles) {
                 for (Circle& b : circles) {
                     if (&a == &b) continue;
-                    if (areColliding(a, b)) {
-                        resolveCollision(a, b);
-                    }
+                    resolveCollision(a, b);
+                    // unneeded, same logic can be checked in resolveCollision
+                    // if (areColliding(a, b)) {
+                    //    resolveCollision(a, b);
+                    // }
                 }
             }
         }
+    }
+
+    void resolveMotion(Circle& circle, sf::Vector2i mousePos) {
+        if (circle.isDragging) {
+            circle.x = mousePos.x;
+            circle.y = mousePos.y;
+        };
+        float dx = windowX/2 - circle.x;
+        float dy = windowY/2 - circle.y;
+        circle.dx = dx * generalAccelerationFactor;
+        circle.dy = dy * generalAccelerationFactor;
+        // circle.dy += gravity;
+        circle.x += circle.dx;
+        circle.y += circle.dy;
+    }
+
+    void resolveCollision(Circle& a, Circle& b) {
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
+        //float d = fastSqrt(dx*dx + dy*dy);
+        float d = sqrt(dx*dx + dy*dy);
+        if (d > round(a.radius + b.radius)) return;
+        float lerp = (a.radius + b.radius - d)/2;
+        a.x -= dx/d * lerp;
+        a.y -= dy/d * lerp;
+        b.x += dx/d * lerp;
+        b.y += dy/d * lerp;
     }
 
     bool areColliding(Circle& a, Circle& b) {
@@ -67,16 +85,5 @@ struct World {
             c.y = 800 - c.radius;
             c.dy = -c.dy;
         }
-    }
-
-    void resolveCollision(Circle& a, Circle& b) {
-        float dx = b.x - a.x;
-        float dy = b.y - a.y;
-        float d = sqrt(dx*dx + dy*dy);
-        float lerp = (a.radius + b.radius - d)/2;
-        a.x -= dx/d * lerp;
-        a.y -= dy/d * lerp;
-        b.x += dx/d * lerp;
-        b.y += dy/d * lerp;
     }
 };

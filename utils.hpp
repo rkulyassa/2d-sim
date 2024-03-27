@@ -1,5 +1,4 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 
 sf::Color getRandomColor() {
@@ -19,5 +18,5 @@ float fastSqrt(float number) {
     y = y * ( threehalfs - ( x2 * y * y ) );    // 1st iteration
     // y = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration, this can be removed 
 
-    return y; 
+    return 1.f/y; 
 }

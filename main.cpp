@@ -118,23 +118,11 @@ int main() {
         window.draw(circleCount);
         // window.draw(calculationsCount);
 
-        // float current = clock.restart().asSeconds();
         sf::Time current = clock.getElapsedTime();
-        // elapsed += frameTime;
-        // frameCount++;
         float fps = 1.f / (current.asSeconds() - t.asSeconds());
         t = current;
         sf::Text fpsText = generateText();
         fpsText.setString("FPS: " + std::to_string(int(fps)));
-
-        // if (elapsed >= 1.0f) {
-        //     float fps = frameCount / elapsed;
-        //     fpsText.setString("FPS: " + std::to_string(frameCount / elapsed));
-        //     frameCount = 0;
-        //     elapsed -= 1.0f;
-        // } else {
-        //     fpsText.setString("FPS: 0");
-        // }
 
         fpsText.setPosition(10.f, 30.f);
 
