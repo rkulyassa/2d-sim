@@ -37,18 +37,26 @@ struct World {
             resolveWallCollision(circle);
             for (Circle& other : circles) {
                 if (&circle == &other) continue;
-                if (checkIntersection(circle, other)) {
+                if (areIntersecting(circle, other)) {
                     resolveCollision(circle, other);
                 }
             }
         }
     }
 
-    bool checkIntersection(Circle& a, Circle& b) {
+    bool areIntersecting(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
         float d = std::sqrt(dx*dx + dy*dy);
         return d <= (a.radius + b.radius);
+    }
+
+    bool areTouching(Circle& a, Circle& b) {
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
+        float d = std::sqrt(dx*dx + dy*dy);
+        int r = std::round(a.radius + b.radius);
+        return d <= r + 2;
     }
 
     void resolveWallCollision(Circle& c) {
@@ -71,22 +79,39 @@ struct World {
         }
     }
 
+    // void resolveCollision(Circle& a, Circle& b) {
+    //     float dx = b.x - a.x;
+    //     float dy = b.y - a.y;
+    //     float d = std::sqrt(dx*dx + dy*dy);
+    //     float nx = dx/d;
+    //     float ny = dy/d;
+    //     float p = 2 * (a.dx * nx + a.dy * ny - b.dx * nx - b.dy * ny) / (a.getMass() + b.getMass());
+    //     float lerp = a.radius + b.radius - d;
+    //     float m = a.getMass() + b.getMass();
+    //     a.x -= dx/d * a.getMass()/m * lerp;
+    //     a.y -= dy/d * a.getMass()/m * lerp;
+    //     b.x += dx/d * b.getMass()/m * lerp;
+    //     b.y += dy/d * b.getMass()/m * lerp;
+    //     a.dx -= p * a.getMass() * nx * circleCollisionEnergyLossFactor;
+    //     a.dy -= p * a.getMass() * ny * circleCollisionEnergyLossFactor;
+    //     b.dx += p * b.getMass() * nx * circleCollisionEnergyLossFactor;
+    //     b.dy += p * b.getMass() * ny * circleCollisionEnergyLossFactor;
+    // }
+
     void resolveCollision(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = std::sqrt(dx*dx + dy*dy);
-        float nx = dx/d;
-        float ny = dy/d;
-        float p = 2 * (a.dx * nx + a.dy * ny - b.dx * nx - b.dy * ny) / (a.getMass() + b.getMass());
-        float lerp = a.radius + b.radius - d;
-        float m = a.getMass() + b.getMass();
-        a.x -= dx/d * a.getMass()/m * lerp;
-        a.y -= dy/d * a.getMass()/m * lerp;
-        b.x += dx/d * b.getMass()/m * lerp;
-        b.y += dy/d * b.getMass()/m * lerp;
-        a.dx -= p * a.getMass() * nx * circleCollisionEnergyLossFactor;
-        a.dy -= p * a.getMass() * ny * circleCollisionEnergyLossFactor;
-        b.dx += p * b.getMass() * nx * circleCollisionEnergyLossFactor;
-        b.dy += p * b.getMass() * ny * circleCollisionEnergyLossFactor;
+        float d = std::sqrt(dx * dx + dy * dy);
+        float m = a.radius + b.radius - d;
+        if (m <= 0) return;
+        if (d == 0) d = 1, dx = 1, dy = 0;
+        else dx /= d, dy /= d;
+        float M = a.getMass() + b.getMass();
+        float aM = b.getMass() / M;
+        float bM = a.getMass() / M;
+        a.x -= dx * m * aM;
+        a.y -= dy * m * aM;
+        b.x += dx * m * bM;
+        b.y += dy * m * bM;
     }
 };

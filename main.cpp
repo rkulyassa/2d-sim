@@ -5,7 +5,9 @@
 
 int main() {
     World world;
-    bool showInterCircleVectors = false;
+    bool showInterCircleVectorsAll = false;
+    bool showInterCircleVectorsTouching = false;
+    bool showCircleBorders = false;
 
     sf::RenderWindow window(sf::VideoMode(world.windowX, world.windowY), "2d Physics Simulation");
     window.setFramerateLimit(60);
@@ -25,7 +27,13 @@ int main() {
                         world.circles.push_back(circle);
                     }
                     if (event.key.code == sf::Keyboard::E) {
-                        showInterCircleVectors = !showInterCircleVectors;
+                        showInterCircleVectorsAll = !showInterCircleVectorsAll;
+                    }
+                    if (event.key.code == sf::Keyboard::T) {
+                        showInterCircleVectorsTouching = !showInterCircleVectorsTouching;
+                    }
+                    if (event.key.code == sf::Keyboard::Y) {
+                        showCircleBorders = !showCircleBorders;
                     }
                     if (event.key.code == sf::Keyboard::R) {
                         world.circles.clear();
@@ -57,8 +65,11 @@ int main() {
         }
         window.clear(sf::Color::Black);
         for (Circle& circle : world.circles) {
+            if (showCircleBorders) {
+                window.draw(circle.getBorder());
+            }
             window.draw(circle.getShape());
-            if (showInterCircleVectors) {
+            if (showInterCircleVectorsAll) {
                 for (Circle& other : world.circles) {
                     sf::VertexArray line(sf::Lines, 2);
                     line[0].position = sf::Vector2f(circle.x, circle.y);
@@ -66,6 +77,18 @@ int main() {
                     line[0].color = sf::Color::Red;
                     line[1].color = sf::Color::Red;
                     window.draw(line);
+                }
+            }
+            if (showInterCircleVectorsTouching) {
+                for (Circle& other : world.circles) {
+                    if (world.areTouching(circle, other)) {
+                        sf::VertexArray line(sf::Lines, 2);
+                        line[0].position = sf::Vector2f(circle.x, circle.y);
+                        line[1].position = sf::Vector2f(other.x, other.y);
+                        line[0].color = sf::Color::Blue;
+                        line[1].color = sf::Color::Blue;
+                        window.draw(line);
+                    }
                 }
             }
         }
