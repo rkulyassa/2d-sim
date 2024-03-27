@@ -3,6 +3,19 @@
 #include "./world.hpp"
 #include "./circle.hpp"
 
+sf::Font font;
+
+sf::Text generateText() {
+    sf::Text text;
+    font.loadFromFile("./Courier.ttf");
+    text.setFont(font);
+    text.setCharacterSize(12);
+    text.setFillColor(sf::Color::White);
+    text.setOutlineThickness(0.5);
+    text.setOutlineColor(sf::Color::White);
+    return text;
+}
+
 int main() {
     World world;
     bool showInterCircleVectorsAll = false;
@@ -92,6 +105,14 @@ int main() {
                 }
             }
         }
+        sf::Text circleCount = generateText();
+        circleCount.setString("Circles: " + std::to_string(world.circles.size()));
+        circleCount.setPosition(10.f, 10.f);
+        sf::Text calculationsCount = generateText();
+        calculationsCount.setString("Calculations/s: " + std::to_string(world.collisionIterations * world.circles.size() * world.circles.size()));
+        calculationsCount.setPosition(10.f, 20.f);
+        window.draw(circleCount);
+        window.draw(calculationsCount);
         window.display();
     }
 }

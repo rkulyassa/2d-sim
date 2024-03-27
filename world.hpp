@@ -7,13 +7,14 @@
 struct World {
     static constexpr float windowX = 800;
     static constexpr float windowY = 800;
+    static constexpr int collisionIterations = 8;
 
     // static constexpr float gravity = 0;
     // static constexpr float wallCollisionEnergyLossFactor = 1;
     // static constexpr float circleCollisionEnergyLossFactor = 1;
     // static constexpr float surfaceFrictionFactor = 1;
     static constexpr float gravity = 9.81;
-    static constexpr float generalAccelerationFactor = 0.1;
+    static constexpr float generalAccelerationFactor = 0.05;
     static constexpr float wallCollisionEnergyLossFactor = 0.8;
     static constexpr float circleCollisionEnergyLossFactor = 0.6;
     static constexpr float surfaceFrictionFactor = 0.95;
@@ -36,7 +37,7 @@ struct World {
             circle.y += circle.dy;
             resolveWallCollision(circle);
         }
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < collisionIterations; i++) {
             for (Circle& a : circles) {
                 for (Circle& b : circles) {
                     if (&a == &b) continue;

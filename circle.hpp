@@ -15,7 +15,7 @@ struct Circle {
         // dy = rand() % 20 - 10;
         // dx = rand() % 20 - 10;
         dx = dy = 0;
-        // radius = 30;
+        // radius = 16;
         radius = rand() % 40 + 20;
         color = getRandomColor();
         // color = sf::Color::Blue;
