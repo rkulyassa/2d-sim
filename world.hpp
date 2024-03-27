@@ -8,16 +8,8 @@ struct World {
     static constexpr float windowX = 800;
     static constexpr float windowY = 800;
     static constexpr int collisionIterations = 8;
-
-    // static constexpr float gravity = 0;
-    // static constexpr float wallCollisionEnergyLossFactor = 1;
-    // static constexpr float circleCollisionEnergyLossFactor = 1;
-    // static constexpr float surfaceFrictionFactor = 1;
-    static constexpr float gravity = 9.81;
+    static constexpr float gravity = 0; // 9.81;
     static constexpr float generalAccelerationFactor = 0.05;
-    static constexpr float wallCollisionEnergyLossFactor = 0.8;
-    static constexpr float circleCollisionEnergyLossFactor = 0.6;
-    static constexpr float surfaceFrictionFactor = 0.95;
 
     std::vector<Circle> circles;
 
@@ -29,7 +21,6 @@ struct World {
             };
             float dx = windowX/2 - circle.x;
             float dy = windowY/2 - circle.y;
-            float d = sqrt(dx*dx + dy*dy);
             circle.dx = dx * generalAccelerationFactor;
             circle.dy = dy * generalAccelerationFactor;
             // circle.dy += gravity;
@@ -41,25 +32,22 @@ struct World {
             for (Circle& a : circles) {
                 for (Circle& b : circles) {
                     if (&a == &b) continue;
-                    resolveCollision(a, b);
+                    if (areColliding(a, b)) {
+                        resolveCollision(a, b);
+                    }
                 }
             }
         }
     }
 
-    bool areIntersecting(Circle& a, Circle& b) {
+    bool areColliding(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = sqrt(dx*dx + dy*dy);
-        return d <= (a.radius + b.radius);
-    }
-
-    bool areTouching(Circle& a, Circle& b) {
-        float dx = b.x - a.x;
-        float dy = b.y - a.y;
-        float d = sqrt(dx*dx + dy*dy);
-        int r = round(a.radius + b.radius);
-        return d <= r + 2;
+        // float d = sqrt(dx*dx + dy*dy);
+        // return d <= round(a.radius + b.radius) + 1;
+        float d2 = dx*dx + dy*dy;
+        float r = round(a.radius + b.radius) + 1;
+        return d2 <= r*r;
     }
 
     void resolveWallCollision(Circle& c) {
@@ -77,22 +65,18 @@ struct World {
         }
         if (c.y + c.radius >= 800) {
             c.y = 800 - c.radius;
-            c.dy = -c.dy * wallCollisionEnergyLossFactor;
-            c.dx *= surfaceFrictionFactor;
+            c.dy = -c.dy;
         }
     }
 
     void resolveCollision(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = std::sqrt(dx*dx + dy*dy);
-        float r = a.radius + b.radius;
-        if (d >= r) return;
-        // float m = a.getMass() + b.getMass();
-        float lerp = (r - d)/2;
-        a.x -= dx/d * lerp;// * b.getMass()/m;
-        a.y -= dy/d * lerp;// * b.getMass()/m;
-        b.x += dx/d * lerp;// * a.getMass()/m;
-        b.y += dy/d * lerp;// * a.getMass()/m;
+        float d = sqrt(dx*dx + dy*dy);
+        float lerp = (a.radius + b.radius - d)/2;
+        a.x -= dx/d * lerp;
+        a.y -= dy/d * lerp;
+        b.x += dx/d * lerp;
+        b.y += dy/d * lerp;
     }
 };

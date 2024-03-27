@@ -24,8 +24,12 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(world.windowX, world.windowY), "2d Physics Simulation");
     window.setFramerateLimit(60);
+    sf::Clock clock;
+    sf::Time t = clock.getElapsedTime();
 
     while (window.isOpen()) {
+        // Circle circle;
+        // world.circles.push_back(circle);
         world.update(sf::Mouse::getPosition(window));
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -94,7 +98,7 @@ int main() {
             }
             if (showInterCircleVectorsTouching) {
                 for (Circle& other : world.circles) {
-                    if (world.areTouching(circle, other)) {
+                    if (world.areColliding(circle, other)) {
                         sf::VertexArray line(sf::Lines, 2);
                         line[0].position = sf::Vector2f(circle.x, circle.y);
                         line[1].position = sf::Vector2f(other.x, other.y);
@@ -109,10 +113,32 @@ int main() {
         circleCount.setString("Circles: " + std::to_string(world.circles.size()));
         circleCount.setPosition(10.f, 10.f);
         sf::Text calculationsCount = generateText();
-        calculationsCount.setString("Calculations/s: " + std::to_string(world.collisionIterations * world.circles.size() * world.circles.size()));
+        calculationsCount.setString("Calculations/s: " + std::to_string(world.collisionIterations * world.circles.size() * world.circles.size() + world.circles.size()));
         calculationsCount.setPosition(10.f, 20.f);
         window.draw(circleCount);
-        window.draw(calculationsCount);
+        // window.draw(calculationsCount);
+
+        // float current = clock.restart().asSeconds();
+        sf::Time current = clock.getElapsedTime();
+        // elapsed += frameTime;
+        // frameCount++;
+        float fps = 1.f / (current.asSeconds() - t.asSeconds());
+        t = current;
+        sf::Text fpsText = generateText();
+        fpsText.setString("FPS: " + std::to_string(int(fps)));
+
+        // if (elapsed >= 1.0f) {
+        //     float fps = frameCount / elapsed;
+        //     fpsText.setString("FPS: " + std::to_string(frameCount / elapsed));
+        //     frameCount = 0;
+        //     elapsed -= 1.0f;
+        // } else {
+        //     fpsText.setString("FPS: 0");
+        // }
+
+        fpsText.setPosition(10.f, 30.f);
+
+        window.draw(fpsText);
         window.display();
     }
 }
