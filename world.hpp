@@ -35,10 +35,12 @@ struct World {
             circle.x += circle.dx;
             circle.y += circle.dy;
             resolveWallCollision(circle);
-            for (Circle& other : circles) {
-                if (&circle == &other) continue;
-                if (areIntersecting(circle, other)) {
-                    resolveCollision(circle, other);
+        }
+        for (int i = 0; i < 8; i++) {
+            for (Circle& a : circles) {
+                for (Circle& b : circles) {
+                    if (&a == &b) continue;
+                    resolveCollision(a, b);
                 }
             }
         }
@@ -79,39 +81,17 @@ struct World {
         }
     }
 
-    // void resolveCollision(Circle& a, Circle& b) {
-    //     float dx = b.x - a.x;
-    //     float dy = b.y - a.y;
-    //     float d = std::sqrt(dx*dx + dy*dy);
-    //     float nx = dx/d;
-    //     float ny = dy/d;
-    //     float p = 2 * (a.dx * nx + a.dy * ny - b.dx * nx - b.dy * ny) / (a.getMass() + b.getMass());
-    //     float lerp = a.radius + b.radius - d;
-    //     float m = a.getMass() + b.getMass();
-    //     a.x -= dx/d * a.getMass()/m * lerp;
-    //     a.y -= dy/d * a.getMass()/m * lerp;
-    //     b.x += dx/d * b.getMass()/m * lerp;
-    //     b.y += dy/d * b.getMass()/m * lerp;
-    //     a.dx -= p * a.getMass() * nx * circleCollisionEnergyLossFactor;
-    //     a.dy -= p * a.getMass() * ny * circleCollisionEnergyLossFactor;
-    //     b.dx += p * b.getMass() * nx * circleCollisionEnergyLossFactor;
-    //     b.dy += p * b.getMass() * ny * circleCollisionEnergyLossFactor;
-    // }
-
     void resolveCollision(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = sqrt(dx * dx + dy * dy);
-        float m = a.radius + b.radius - d;
-        if (m <= 0) return;
-        if (d == 0) d = 1, dx = 1, dy = 0;
-        else dx /= d, dy /= d;
-        float M = a.getMass() + b.getMass();
-        float aM = b.getMass() / M;
-        float bM = a.getMass() / M;
-        a.x -= dx * m * aM;
-        a.y -= dy * m * aM;
-        b.x += dx * m * bM;
-        b.y += dy * m * bM;
+        float d = std::sqrt(dx*dx + dy*dy);
+        float r = a.radius + b.radius;
+        if (d >= r) return;
+        // float m = a.getMass() + b.getMass();
+        float lerp = (r - d)/2;
+        a.x -= dx/d * lerp;// * b.getMass()/m;
+        a.y -= dy/d * lerp;// * b.getMass()/m;
+        b.x += dx/d * lerp;// * a.getMass()/m;
+        b.y += dy/d * lerp;// * a.getMass()/m;
     }
 };
