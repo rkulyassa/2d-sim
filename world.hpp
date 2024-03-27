@@ -6,9 +6,11 @@
 struct World {
     static constexpr float windowX = 800;
     static constexpr float windowY = 800;
-    static constexpr int collisionIterations = 8;
+    static constexpr int substeps = 8;
+    static constexpr float dt = 1.f / 60.f;
+    static constexpr float subdt = dt / static_cast<float>(substeps);
     static constexpr float gravity = 0; // 9.81;
-    static constexpr float generalAccelerationFactor = 0.05;
+    static constexpr float generalAccelerationFactor = 8000;
 
     std::vector<Circle> circles;
 
@@ -17,7 +19,8 @@ struct World {
             resolveMotion(circle, mousePos);
             resolveWallCollision(circle);
         }
-        for (int i = 0; i < collisionIterations; i++) {
+        // for (int i = 0; i < collisionIterations; i++) {
+        for (int i = 0; i < substeps; ++i) {
             for (Circle& a : circles) {
                 for (Circle& b : circles) {
                     if (&a == &b) continue;
@@ -38,11 +41,11 @@ struct World {
         };
         float dx = windowX/2 - circle.x;
         float dy = windowY/2 - circle.y;
-        circle.dx = dx * generalAccelerationFactor;
-        circle.dy = dy * generalAccelerationFactor;
+        circle.dx = dx * generalAccelerationFactor * subdt;
+        circle.dy = dy * generalAccelerationFactor * subdt;
         // circle.dy += gravity;
-        circle.x += circle.dx;
-        circle.y += circle.dy;
+        circle.x += circle.dx * subdt;
+        circle.y += circle.dy * subdt;
     }
 
     void resolveCollision(Circle& a, Circle& b) {

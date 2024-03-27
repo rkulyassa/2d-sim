@@ -109,14 +109,11 @@ int main() {
                 }
             }
         }
+
         sf::Text circleCount = generateText();
         circleCount.setString("Circles: " + std::to_string(world.circles.size()));
         circleCount.setPosition(10.f, 10.f);
-        sf::Text calculationsCount = generateText();
-        calculationsCount.setString("Calculations/s: " + std::to_string(world.collisionIterations * world.circles.size() * world.circles.size() + world.circles.size()));
-        calculationsCount.setPosition(10.f, 20.f);
         window.draw(circleCount);
-        // window.draw(calculationsCount);
 
         sf::Time current = clock.getElapsedTime();
         float fps = 1.f / (current.asSeconds() - t.asSeconds());
