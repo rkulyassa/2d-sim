@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 sf::Color getRandomColor() {
-    return sf::Color(std::rand() % 256, std::rand() % 256, std::rand() % 256);
+    return sf::Color(rand() % 256, rand() % 256, rand() % 256);
 }
 
 float fastSqrt(float number) {

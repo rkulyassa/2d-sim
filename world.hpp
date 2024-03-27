@@ -28,7 +28,7 @@ struct World {
             };
             float dx = windowX/2 - circle.x;
             float dy = windowY/2 - circle.y;
-            float d = std::sqrt(dx*dx + dy*dy);
+            float d = sqrt(dx*dx + dy*dy);
             circle.dx = dx * generalAccelerationFactor;
             circle.dy = dy * generalAccelerationFactor;
             // circle.dy += gravity;
@@ -47,15 +47,15 @@ struct World {
     bool areIntersecting(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = std::sqrt(dx*dx + dy*dy);
+        float d = sqrt(dx*dx + dy*dy);
         return d <= (a.radius + b.radius);
     }
 
     bool areTouching(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = std::sqrt(dx*dx + dy*dy);
-        int r = std::round(a.radius + b.radius);
+        float d = sqrt(dx*dx + dy*dy);
+        int r = round(a.radius + b.radius);
         return d <= r + 2;
     }
 
@@ -101,7 +101,7 @@ struct World {
     void resolveCollision(Circle& a, Circle& b) {
         float dx = b.x - a.x;
         float dy = b.y - a.y;
-        float d = std::sqrt(dx * dx + dy * dy);
+        float d = sqrt(dx * dx + dy * dy);
         float m = a.radius + b.radius - d;
         if (m <= 0) return;
         if (d == 0) d = 1, dx = 1, dy = 0;
