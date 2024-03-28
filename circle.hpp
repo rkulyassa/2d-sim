@@ -15,8 +15,8 @@ struct Circle {
         // dx = rand() % 20 - 10;
         dx = dy = 0;
         // radius = 12;
-        // radius = rand() % 10 + 5;
-        radius = 12;
+        radius = rand() % 10 + 5;
+        // radius = 12;
         // radius = rand() % 20 + 10;
         // radius = rand() % 40 + 20;
         color = getRandomColor();
