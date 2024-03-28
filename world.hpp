@@ -6,11 +6,12 @@
 struct World {
     static constexpr float windowX = 800;
     static constexpr float windowY = 800;
+    static constexpr int collisionIterations = 2;
     static constexpr int substeps = 8;
-    static constexpr float dt = 1.f / 60.f;
-    static constexpr float subdt = dt / static_cast<float>(substeps);
+    static constexpr float dt = (1.f / 60.f) / static_cast<float>(substeps);
+    //static constexpr float subdt = dt / static_cast<float>(substeps);
     static constexpr float gravity = 0; // 9.81;
-    static constexpr float generalAccelerationFactor = 8000;
+    static constexpr float generalAccelerationFactor = 5000;
 
     std::vector<Circle> circles;
 
@@ -21,7 +22,8 @@ struct World {
         }
         // for (int i = 0; i < collisionIterations; i++) {
         for (int i = 0; i < substeps; ++i) {
-            for (Circle& a : circles) {
+            for (int i = 0; i < collisionIterations; i++) {
+                for (Circle& a : circles) {
                 for (Circle& b : circles) {
                     if (&a == &b) continue;
                     resolveCollision(a, b);
@@ -30,6 +32,7 @@ struct World {
                     //    resolveCollision(a, b);
                     // }
                 }
+            }
             }
         }
     }
@@ -41,11 +44,11 @@ struct World {
         };
         float dx = windowX/2 - circle.x;
         float dy = windowY/2 - circle.y;
-        circle.dx = dx * generalAccelerationFactor * subdt;
-        circle.dy = dy * generalAccelerationFactor * subdt;
+        circle.dx = dx * generalAccelerationFactor * dt;
+        circle.dy = dy * generalAccelerationFactor * dt;
         // circle.dy += gravity;
-        circle.x += circle.dx * subdt;
-        circle.y += circle.dy * subdt;
+        circle.x += circle.dx * dt;
+        circle.y += circle.dy * dt;
     }
 
     void resolveCollision(Circle& a, Circle& b) {

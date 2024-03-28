@@ -60,7 +60,7 @@ int main() {
                 case sf::Event::MouseButtonPressed:
                     if (event.mouseButton.button == sf::Mouse::Left) {
                         for (Circle& circle : world.circles) {
-                            if (circle.getShape().getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
+                            if (circle.getShape(false).getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window)))) {
                                 circle.isDragging = true;
                                 break;
                             }
@@ -84,8 +84,10 @@ int main() {
         for (Circle& circle : world.circles) {
             if (showCircleBorders) {
                 window.draw(circle.getBorder());
+                window.draw(circle.getShape(1));
+            } else {
+                window.draw(circle.getShape(0));
             }
-            window.draw(circle.getShape());
             if (showInterCircleVectorsAll) {
                 for (Circle& other : world.circles) {
                     sf::VertexArray line(sf::Lines, 2);
@@ -113,17 +115,21 @@ int main() {
         sf::Text circleCount = generateText();
         circleCount.setString("Circles: " + std::to_string(world.circles.size()));
         circleCount.setPosition(10.f, 10.f);
-        window.draw(circleCount);
 
         sf::Time current = clock.getElapsedTime();
         float fps = 1.f / (current.asSeconds() - t.asSeconds());
         t = current;
         sf::Text fpsText = generateText();
         fpsText.setString("FPS: " + std::to_string(int(fps)));
-
         fpsText.setPosition(10.f, 30.f);
 
+        sf::Text guide = generateText();
+        guide.setString("[W] Spawn circle\n[R] Reset world\n[E] Show inter-circle vectors\n[T] Show touching circle vectors\n[Y] Show borders");
+        guide.setPosition(10.f, 50.f);
+
+        window.draw(circleCount);
         window.draw(fpsText);
+        window.draw(guide);
         window.display();
     }
 }
