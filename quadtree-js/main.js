@@ -8,12 +8,13 @@ const ctx = canvas.getContext('2d', { alpha: false });
 const cellVelocity = 2;
 const capacity = 4;
 const acceleration = 0.1;
+const maxDepth = 5;
 
 let points = [];
 
 function addPoints(n) {
     for (let i = 0; i < n; i++) {
-        const point = new Point(Math.random() * canvas.width, Math.random() * canvas.height, Math.floor(Math.random()*10+10));
+        const point = new Point(Math.random() * canvas.width, Math.random() * canvas.height, Math.floor(Math.random()*20+50));
         points.push(point);
     }
 }
@@ -22,41 +23,54 @@ function resolveCollision(a, b) {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
     const d = Math.sqrt(dx*dx + dy*dy);
-    if (d > a.radius + b.radius) return;
-    const lerp = (a.radius + b.radius - d)/2;
-    a.x -= dx/d * lerp;
-    a.y -= dy/d * lerp;
-    b.x += dx/d * lerp;
-    b.y += dy/d * lerp;
+    // console.log(d, a.radius, b.radius);
+    if (d >= a.radius + b.radius) return;
+    const overlap = a.radius + b.radius - d;
+
+    // console.log(a.radius, b.radius, d, lerp);
+    // const M = a.getBoundingRect().area + b.getBoundingRect().area;
+    a.x -= dx/d * overlap/2;// * b.getBoundingRect().area/M;
+    a.y -= dy/d * overlap/2;// * b.getBoundingRect().area/M;
+    b.x += dx/d * overlap/2;// * a.getBoundingRect().area/M;
+    b.y += dy/d * overlap/2;// * a.getBoundingRect().area/M;
+
+
 }
 
 let quadtree;
 
-function step() {
+function render() {
+    requestAnimationFrame(render);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    quadtree = new Quadtree(new Rect(canvas.width/2, canvas.width/2, canvas.width/2, canvas.width/2), capacity, 5, null);
+    quadtree = new Quadtree(new Rect(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2), capacity, maxDepth);
     for (const point of points) {
         quadtree.insert(point);
     }
     for (const a of points) {
-        const pointsResult = quadtree.query(a.getBoundingRect(), null);
-        // console.log(pointsResult);
-        // console.log(a.getBoundingRect());
-        // console.log(pointsResult);
-        for (const b of pointsResult) {
-            if (a === b) continue;
-            for (let i = 0; i < 4; i++) {
+        // for (let i = 0; i < 80; i++) {
+            const pointsResult = quadtree.query(a.getBoundingRect());
+            // console.log(pointsResult);
+            for (const b of pointsResult) {
+                if (a === b) continue;
                 resolveCollision(a, b);
             }
-            // point.update(this.rootBoundary);
-        }
+        // }
+    }
+    for (const a of points) {
         a.update();
     }
     quadtree.draw(ctx);
-    requestAnimationFrame(step);
+    for (const point of points) {
+        point.draw();
+        point.getBoundingRect().draw();
+    }
+    // setTimeout(() => {
+    //     requestAnimationFrame(step);
+    // }, 200);
 }
 
-requestAnimationFrame(step);
+render();
 
 // ctx.scale(dpr, dpr);
 // canvas.style.width = `${rect.width}px`;

@@ -13,6 +13,13 @@ class Point {
         return new Rect(this.x, this.y, this.radius*2, this.radius*2);
     }
 
+    intersects(other) {
+        const dx = other.x - this.x;
+        const dy = other.y - this.y;
+        const d2 = dx*dx + dy*dy;
+        return (this.radius + other.radius)**2 > d2;
+    }
+
     update() {
         this.dx = canvas.width/2 - this.x;
         this.dy = canvas.height/2 - this.y;
@@ -41,10 +48,13 @@ class Point {
     }
 
     draw() {
+        ctx.strokeStyle = '#000000';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
         ctx.fillStyle = '#FF0000';
         ctx.fill();
+        ctx.closePath();
     }
 }
 
@@ -54,6 +64,7 @@ class Rect {
         this.y = y;
         this.w = w;
         this.h = h;
+        // this.area = w*2+h*2;
     }
 
     contains(point) {
@@ -64,11 +75,26 @@ class Rect {
     }
 
     intersects(other) {
-        return this.x - this.w <= other.x + other.w &&
-               this.x + this.w >= other.x - other.w &&
-               this.y - this.h <= other.y + other.h &&
-               this.y + this.h >= other.y - other.h;
+        return this.x - this.w < other.x + other.w &&
+               this.x + this.w > other.x - other.w &&
+               this.y - this.h < other.y + other.h &&
+               this.y + this.h > other.y - other.h;
+    }
 
+    draw() {
+        // const x = this.boundary.x;
+        // const y = this.boundary.y;
+        // const w = this.boundary.w;
+        // const h = this.boundary.h;
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(this.x - this.w, this.y - this.h, this.w*2, this.h*2);
+        // ctx.strokeStyle = '#000000';
+        // ctx.lineWidth = 1;
+        // ctx.beginPath();
+        // ctx.rect(this.x, this.y, this.width, this.height);
+        // ctx.stroke();
+        // ctx.closePath();
     }
 }
 
@@ -86,18 +112,29 @@ class Quadtree {
     insert(point) {
         if (!this.boundary.contains(point)) return;
 
-        if (this.depth > this.maxDepth) {
+        // if (this.depth > this.maxDepth) {
+        //     this.points.push(point);
+        // } else {
+        //     if (this.points.length < this.capacity && !this.divided) {
+        //         this.points.push(point);
+        //     } else {
+        //         if (!this.divided) {
+        //             this.subdivide();
+        //         }
+        //         for (const branch of this.branches) {
+        //             branch.insert(point);
+        //         }
+        //     }
+        // }
+        if (this.points.length < this.capacity) {
             this.points.push(point);
         } else {
-            if (this.points.length < this.capacity && !this.divided) {
-                this.points.push(point);
-            } else {
-                if (!this.divided) {
-                    this.subdivide();
-                }
-                for (const branch of this.branches) {
-                    branch.insert(point);
-                }
+            if (!this.divided){
+                this.divided = true;
+                this.subdivide();
+            }
+            for (const branch of this.branches) {
+                branch.insert(point);
             }
         }
     }
@@ -131,7 +168,7 @@ class Quadtree {
         if (!this.boundary.intersects(range)) return found;
 
         for (const point of this.points) {
-            if (range.contains(point)) {
+            if (range.intersects(point.getBoundingRect())) {
                 found.push(point);
             }
         }
@@ -146,16 +183,12 @@ class Quadtree {
     }
     
     draw() {
-        const x = this.boundary.x;
-        const y = this.boundary.y;
-        const w = this.boundary.w;
-        const h = this.boundary.h;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x - w, y - h, w*2, h*2);
+        this.boundary.draw();
 
-        for (const point of this.points) {
-            point.draw();
-        }
+        // for (const point of this.points) {
+        //     point.draw();
+        //     point.getBoundingRect().draw();
+        // }
 
         if (this.divided) {
             for (const branch of this.branches) {
