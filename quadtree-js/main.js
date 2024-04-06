@@ -130,10 +130,6 @@ function render() {
     }
     if (canvasCenterEnabled) {
         ctx.fillStyle = '#000000';
-        // ctx.beginPath();
-        // ctx.arc(canvas.width/2, canvas.height/2, canvasCenterPointSize/2, 0, Math.PI * 2);
-        // ctx.fill();
-        // ctx.closePath();
         ctx.fillRect(canvas.width/2 - canvasCenterPointSize/2, canvas.height/2 - canvasCenterPointSize/2, canvasCenterPointSize, canvasCenterPointSize);
     }
     document.getElementById('circleCount').innerText = `Circle count: ${circles.length}`;
