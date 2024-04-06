@@ -1,12 +1,3 @@
-// Physics
-const gravity = 0.1;
-const cellVelocity = 2;
-const circleSizes = [2, 4, 6];
-
-// Quadtree
-const maxObjects = 8;
-const maxDepth = 5;
-
 // Rendering/computation
 const collisionIterations = 4;
 const substeps = 8;
@@ -20,8 +11,13 @@ let fps;
 
 // Input
 let worldType;
-let quadtreeEnabled;
+let circleSizes;
 let collisionsEnabled;
+let gravity;
+let circleVelocity;
+let maxObjects;
+let maxDepth;
+let quadtreeEnabled;
 let circleBordersEnabled;
 let canvasCenterEnabled;
 
@@ -92,7 +88,7 @@ function tick() {
                 }
             }
         }
-        document.getElementById('collisionChecksCount').innerText = `Collision checks count: ${collisionChecksCount}`;
+        document.getElementById('collisionChecksCount').innerText = `Collision checks/frame: ${collisionChecksCount}`;
     }
 }
 
@@ -111,8 +107,13 @@ function render() {
 
     // update inputs
     worldType = parseInt(document.getElementById('worldSelect').value);
-    quadtreeEnabled = document.getElementById('quadtreeEnabled').checked;
+    circleSizes = document.getElementById('circleSizesInput').value.split(',').map(i => parseFloat(i));
     collisionsEnabled = document.getElementById('collisionsEnabled').checked;
+    gravity = parseFloat(document.getElementById('gravityInput').value);
+    circleVelocity = parseFloat(document.getElementById('circleVelocityInput').value);
+    maxObjects = parseInt(document.getElementById('maxObjectsInput').value);
+    maxDepth = parseInt(document.getElementById('maxDepthInput').value);
+    quadtreeEnabled = document.getElementById('quadtreeEnabled').checked;
     circleBordersEnabled = document.getElementById('circleBordersEnabled').checked;
     canvasCenterEnabled = document.getElementById('canvasCenterEnabled').checked;
 
@@ -132,7 +133,7 @@ function render() {
         ctx.fillStyle = '#000000';
         ctx.fillRect(canvas.width/2 - canvasCenterPointSize/2, canvas.height/2 - canvasCenterPointSize/2, canvasCenterPointSize, canvasCenterPointSize);
     }
-    document.getElementById('circleCount').innerText = `Circle count: ${circles.length}`;
+    document.getElementById('circleCount').innerText = `Circles: ${circles.length}`;
 
     // calculate fps
     const delta = (performance.now() - initialFrameTime)/1000;

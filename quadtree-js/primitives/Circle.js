@@ -23,8 +23,8 @@ class Circle {
                 break;
             
             case 1: // Random pong motion
-                this.dx = this.seeds[0] * this.seeds[2] * cellVelocity;
-                this.dy = this.seeds[1] * this.seeds[3] * cellVelocity;
+                this.dx = this.seeds[0] * this.seeds[2] * circleVelocity;
+                this.dy = this.seeds[1] * this.seeds[3] * circleVelocity;
                 this.x += this.dx * 1/substeps;
                 this.y += this.dy * 1/substeps;
                 this.resolveWallCollision();
