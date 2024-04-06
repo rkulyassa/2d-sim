@@ -4,15 +4,31 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
 	<title>QuadTree</title>
+</head>
+<body>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script> -->
 	<!-- <script src="./codetrain/quadtree-CT.js"></script> -->
 	<!-- <script src="./codetrain/sketch.js"></script> -->
-	<canvas width="800" height="800"></canvas>
-	<script src="quadtree.js"></script>
+	<canvas width="600" height="600"></canvas><br>
+	<span id="fps">FPS: 0</span><br>
+	<span id="circleCount">Circle count: 0</span><br>
+	<span id="collisionChecksCount">Collision checks count: 0</span><br>
+	<label>World type:</label>
+	<select id="worldSelect">
+		<option value="0">Gravitate to center</option>
+		<option value="1">Random pong motion</option>
+		<option value="2">No motion</option>
+	</select><br>
+	<label>Add circles: </label><input type="number" id="addCirclesInput"><button onclick="addCircles(document.getElementById('addCirclesInput').value)">Add</button><br>
+	<button onclick="reset()">Reset</button><br>
+	<input id="quadtreeEnabled" type="checkbox" checked><label>Use Quadtree</label><br>
+	<input id="collisionsEnabled" type="checkbox" checked><label>Collisions enabled</label><br>
+	<input id="circleBordersEnabled" type="checkbox"><label>Show circle borders</label><br>
+	<input id="canvasCenterEnabled" type="checkbox"><label>Show canvas center</label><br>
+	<script src="primitives/Rect.js"></script>
+	<script src="primitives/Circle.js"></script>
+	<script src="primitives/Quadtree.js"></script>
 	<script src="main.js"></script>
-</head>
-<body>
 </body>
 </html>
