@@ -8,6 +8,7 @@ const ctx = canvas.getContext('2d');
 let fpsUpdateOffset = 5; // frames at which fps updates, for readability
 let initialFrameTime;
 let fps;
+let collisionChecksCount = 0;
 
 // Input
 let worldType;
@@ -34,17 +35,19 @@ function reset() {
  * @param {Circle} b 
  * @description
  * Separate circles along a normalized difference vector
- * Scale by the amount of overlap to the intersection midpoint and the "mass" of both circles
+ * Scale by the amount of overlap to the intersection midpoint and the relative "mass" of both circles
  */
 function resolveCollision(a, b) {
     const dx = b.x - a.x;
     const dy = b.y - a.y;
-    const d = Math.sqrt(dx*dx + dy*dy);
+    const d2 = dx*dx + dy*dy;
+    const r = a.radius + b.radius;
+    if (d2 >= r*r) return;
 
-    if (d >= a.radius + b.radius) return;
+    const d = Math.sqrt(d2);
     const overlap = (a.radius + b.radius - d)/2;
-
     const m = a.squareSize + b.squareSize;
+
     a.x -= dx/d * overlap * b.squareSize/m;
     a.y -= dy/d * overlap * b.squareSize/m;
     b.x += dx/d * overlap * a.squareSize/m;
@@ -77,7 +80,6 @@ function tick() {
 
     // separate colliding circles. uses quadtree query for O(n*log(n)) time complexity, else n^2 algorithm
     if (collisionsEnabled) {
-        let collisionChecksCount = 0;
         for (let i = 0; i < collisionIterations; i++) {
             for (const a of circles) {
                 let compareArray = quadtreeEnabled ? quadtree.query(a.getBoundingRect()) : circles;
@@ -88,7 +90,6 @@ function tick() {
                 }
             }
         }
-        document.getElementById('collisionChecksCount').innerText = `Collision checks/frame: ${collisionChecksCount}`;
     }
 }
 
@@ -121,6 +122,8 @@ function render() {
     for (let i = 0; i < substeps; i++) {
         tick();
     }
+    document.getElementById('collisionChecksCount').innerText = `Collision checks/frame: ${collisionChecksCount}`;
+    collisionChecksCount = 0;
 
     // draw to canvas
     if (quadtreeEnabled) {
